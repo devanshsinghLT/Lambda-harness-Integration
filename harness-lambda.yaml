@@ -1,0 +1,48 @@
+pipeline:
+  name: harness setup
+  identifier: harness_setup
+  projectIdentifier: My_First_CI_Project
+  orgIdentifier: default
+  tags: {}
+  stages:
+    - stage:
+        name: trigger
+        identifier: trigger
+        description: ""
+        type: Custom
+        spec:
+          execution:
+            steps:
+              - step:
+                  type: ShellScript
+                  name: ShellScript_1
+                  identifier: ShellScript_1
+                  spec:
+                    shell: Bash
+                    executionTarget: {}
+                    source:
+                      type: Inline
+                      spec:
+                        script: |
+                          #!/bin/bash
+
+                          echo "Triggering sanity tests on LambdaTest..."
+
+                          # Execute the POST request to the LambdaTest public endpoint
+                          response=$(curl --silent --show-error --location \
+                            'https://lambdatest.com' \
+                            --header 'accept: application/json' \
+                            --header 'Content-Type: application/json' \
+                            --header 'Authorization: Basic ZGV2YW5zaHNpbmdodGVzdG11YWk6TFRfd1BjUGYxWTdFNmFGaXdDRGVNZGtaTUpHVEVqM1ZOMlJFQlhYZGd6ZnFjQjFKQWc=' \
+                            --data '{
+                              "test_run_id": "01M036FDXYNMV71108QF1E97VX",
+                              "concurrency": 1
+                            }')
+
+                          # Output the API reaction directly into your job logs
+                          echo "Response received:"
+                          echo "$response"
+                    environmentVariables: []
+                    outputVariables: []
+                  timeout: 10m
+        tags: {}
