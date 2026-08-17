@@ -1,0 +1,41 @@
+pipeline:
+  name: Harness Integration
+  identifier: harness_integration
+  projectIdentifier: your_project_id
+  orgIdentifier: default
+  tags: {}
+  stages:
+    - stage:
+        name: Sanity Test Stage
+        identifier: sanity_test_stage
+        type: CI
+        spec:
+          cloneCodeAsStep: false
+          infrastructure:
+            type: HarnessCloud
+            spec:
+              arch: Amd64
+              os: Linux
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Trigger Sanity Test on LambdaTest
+                  identifier: trigger_sanity_test_on_lambdatest
+                  spec:
+                    connectorRef: account.harnessimage
+                    image: alpine
+                    shell: Sh
+                    command: |-
+                      echo "Triggering sanity tests on LambdaTest..."
+                      response=$(curl --silent --show-error --location \
+                        'https://lambdatest.com' \
+                        --header 'accept: application/json' \
+                        --header 'Content-Type: application/json' \
+                        --header 'Authorization: Basic ZGV2YW5zaHNpbmdodGVzdG11YWk6TFRfd1BjUGYxWTdFNmFGaXdDRGVNZGtaTUpHVEVqM1ZOMlJFQlhYZGd6ZnFjQjFKQWc=' \
+                        --data '{
+                          "test_run_id": "01M036FDXYNMV71108QF1E97VX",
+                          "concurrency": 1
+                        }')
+                      echo "Response received:"
+                      echo "$response"
